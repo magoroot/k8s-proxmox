@@ -1,16 +1,24 @@
-fullnameOverride: kube-prometheus-stack
+grafana:
+  admin:
+    existingSecret: grafana-admin
+    userKey: admin-user
+    passwordKey: admin-password
 
-prometheusOperator:
-  enabled: true
+  service:
+    type: NodePort
+    nodePort: 32000
+
+  persistence:
+    enabled: true
+    storageClassName: nfs-sc
+    accessModes: ["ReadWriteOnce"]
+    size: 5Gi
+
 
 prometheus:
-  enabled: true
   prometheusSpec:
     retention: 10d
-    serviceMonitorSelectorNilUsesHelmValues: false
-    podMonitorSelectorNilUsesHelmValues: false
-    ruleSelectorNilUsesHelmValues: false
-
+    retentionSize: "20GB"
     storageSpec:
       volumeClaimTemplate:
         spec:
@@ -20,14 +28,8 @@ prometheus:
             requests:
               storage: 20Gi
 
-  service:
-    type: NodePort
-    nodePort: 32090
-
 alertmanager:
-  enabled: true
   alertmanagerSpec:
-    retention: 120h
     storage:
       volumeClaimTemplate:
         spec:
@@ -35,37 +37,4 @@ alertmanager:
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
-              storage: 5Gi
-
-  service:
-    type: NodePort
-    nodePort: 32093
-
-grafana:
-  enabled: true
-  admin:
-    existingSecret: grafana-admin
-    userKey: admin-user
-    passwordKey: admin-password
-
-  service:
-    type: NodePort
-    nodePort: 32080
-
-nodeExporter:
-  enabled: true
-
-kubeStateMetrics:
-  enabled: true
-
-defaultRules:
-  create: true
-
-kubeApiServer:
-  enabled: true
-kubeControllerManager:
-  enabled: true
-kubeScheduler:
-  enabled: true
-kubeEtcd:
-  enabled: true
+              storage: 2Gi
