@@ -5,22 +5,32 @@ metadata:
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "10"
-
 spec:
   project: default
-  source:
-    repoURL: https://prometheus-community.github.io/helm-charts
-    chart: kube-prometheus-stack
-    targetRevision: 62.6.0
-    helm:
-      valueFiles:
-        - values.yaml
+
+  sources:
+    # 1) Helm chart remoto
+    - repoURL: https://prometheus-community.github.io/helm-charts
+      chart: kube-prometheus-stack
+      targetRevision: 62.6.0
+      helm:
+        # Esse caminho aponta para o arquivo NO SEU GIT (source ref abaixo)
+        valueFiles:
+          - $values/platform/monitoring/kube-prometheus-stack/values.yaml
+
+    # 2) Seu repo Git, só para fornecer values (ref = values)
+    - repoURL: https://github.com/magoroot/k8s-proxmox.git
+      targetRevision: main
+      ref: values
+
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
+
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+      - ServerSideApply=true
