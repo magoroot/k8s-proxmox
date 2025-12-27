@@ -1,3 +1,7 @@
+prometheusOperator:
+  crds:
+    enabled: true
+
 grafana:
   admin:
     existingSecret: grafana-admin
@@ -10,20 +14,21 @@ grafana:
 
   persistence:
     enabled: true
+    type: pvc
     storageClassName: nfs-sc
-    accessModes: ["ReadWriteOnce"]
+    accessModes:
+      - ReadWriteOnce
     size: 5Gi
-
 
 prometheus:
   prometheusSpec:
     retention: 10d
-    retentionSize: "20GB"
     storageSpec:
       volumeClaimTemplate:
         spec:
           storageClassName: nfs-sc
-          accessModes: ["ReadWriteOnce"]
+          accessModes:
+            - ReadWriteOnce
           resources:
             requests:
               storage: 20Gi
@@ -34,7 +39,8 @@ alertmanager:
       volumeClaimTemplate:
         spec:
           storageClassName: nfs-sc
-          accessModes: ["ReadWriteOnce"]
+          accessModes:
+            - ReadWriteOnce
           resources:
             requests:
               storage: 2Gi
