@@ -1,6 +1,8 @@
 prometheusOperator:
   crds:
     enabled: true
+  admissionWebhooks:
+    enabled: false  
 
 grafana:
   admin:
